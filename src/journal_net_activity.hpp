@@ -12,6 +12,7 @@
 // !!! DO NOT include journal_net_activity.h here, 'cause it leads to circular refs. !!!
 
 #include <fstream>
+#include <sstream>
 
 //==============================================================================
 // class JournalNetActivity
@@ -80,5 +81,29 @@ void JournalNetActivity<numLevels>::outputSuspiciousActivities(
         const TimeStamp& timeTo,
         std::ostream& out) const
 {
-    // TODO: Implement this method!
+    std::stringstream output;
+    output << timeTo;
+    std::string line = output.str();
+    int lsd1 = line[output.str().length() -1] - '0';
+    int lsd2 = line[output.str().length() -2] - '0';
+    if(++lsd1 == 10) {
+        lsd1 = 0;
+        lsd2++;
+    }
+    char lsdch1 = lsd1 + '0';
+    char lsdch2 = lsd2 + '0';
+    line[output.str().length() -1] = lsdch1;
+    line[output.str().length() -2] = lsdch2;
+    std::istringstream iss(line);
+    TimeStamp tms;
+    iss >> tms;
+
+    typename NetActivityList::Node* cur = _journal.findFirst(timeFrom);
+
+    while(cur != _journal.findLastLessThan(tms))
+    {
+        if(cur->value.host == hostSuspicious)
+            std::cout << cur->key <<" "<< cur->value.user << " " << cur->value.host << std::endl;
+        cur = cur->next;
+    }
 }
