@@ -12,6 +12,7 @@
 // !!! DO NOT include skip_list.h here, 'cause it leads to circular refs. !!!
 
 #include <cstdlib>
+#include "time_stamp.h"
 
 //==============================================================================
 // class NodeSkipList
@@ -76,7 +77,7 @@ SkipList<Value, Key, numLevels>::SkipList(double probability)
 template<class Value, class Key, int numLevels>
 SkipList<Value, Key, numLevels>::~SkipList()
 {
-    // Only makes bad RE in online tests.
+
 }
 
 template<class Value, class Key, int numLevels>
@@ -119,13 +120,20 @@ void SkipList<Value, Key, numLevels>::insert(const Value &val, const Key &key)
 template<class Value, class Key, int numLevels>
 void SkipList<Value, Key, numLevels>::removeNext(SkipList::Node *nodeBefore)
 {
-    Node *current = nodeBefore->next;
+    Node* temp = Base::_preHead;
+    bool was = false;
 
-    if (current == Base::_preHead)
-        throw std::invalid_argument("Error");
+    for(int i = 0; i < Base::_preHead->levelHighest; i++)
+    {
+        temp = temp->next;
+        if (temp == nodeBefore)
+            was = true;
+    }
+
+    if(was)
+        throw std::invalid_argument("");
     else
-        delete current;
-
+        nodeBefore->next = nodeBefore->next->next;
 }
 
 template<class Value, class Key, int numLevels>
