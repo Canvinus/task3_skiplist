@@ -130,7 +130,7 @@ void SkipList<Value, Key, numLevels>::removeNext(SkipList::Node *nodeBefore)
             was = true;
     }
 
-    if(was)
+    if(!was)
         throw std::invalid_argument("");
     else
         nodeBefore->next = nodeBefore->next->next;
